@@ -14,11 +14,15 @@
         </caption>
         <thead>
         <tr>
-            <td>datum</td>
-            <td>tijd</td>
-            <td>soort activiteit</td>
-            <td>prijs</td>
-            <td>schrijf in</td>
+            <td>Datum</td>
+            <td>Tijd</td>
+            <td>Soort activiteit</td>
+            <td>Beschrijving</td>
+            <td>Prijs</td>
+            <td>Tijdsduur</td>
+            <td>Minimum leeftijd</td>
+            <td>Beschikbare plekken</td>
+            <td>Schrijf in</td>
         </tr>
         </thead>
         <tbody>
@@ -35,15 +39,34 @@
                 {{ activiteit.soort.naam}}
             </td>
             <td>
+                {{ activiteit.soort.beschrijving }}
+            </td>
+            <td>
                 &euro;{{ activiteit.soort.prijs|number_format(2,',','.')}}
             </td>
-            <td title="schrijf in voor activiteit">
-
-
-                <a href="{{ path('inschrijven', {'id':activiteit.id}) }}" >
-                    <span class="glyphicon glyphicon-plus" style="color:red"></span>
-                </a>
+            <td>
+                {{ activiteit.soort.tijdsduur }} minuten
             </td>
+            <td>
+                {{ activiteit.soort.minLeeftijd }} jaar
+            </td>
+            <td>
+                {% if (activiteit.maxdeelnemers - activiteit.users|length) <= 0  %}
+                    <p style="color:red;">Niet beschikbaar</p>
+            </td>
+                {% else %}
+                {{ (activiteit.maxdeelnemers - activiteit.users|length )}}
+                    </td>
+                    <td title="schrijf in voor activiteit">
+
+
+                        <a href="{{ path('inschrijven', {'id':activiteit.id}) }}" >
+                            <span class="glyphicon glyphicon-plus" style="color:red"></span>
+                        </a>
+                    </td>
+                    {% endif %}
+
+
         </tr>
         {% endfor %}
         </tbody>

@@ -4,12 +4,16 @@ namespace App\Controller;
 
 
 use App\Entity\Activiteit;
+use App\Entity\Soortactiviteit;
 use App\Form\ActiviteitType;
+use App\Form\SoortactiviteitType;
+use App\Repository\SoortactiviteitRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\Form\Extension\Core\Type\ResetType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class MedewerkerController extends Controller
 {
@@ -153,5 +157,51 @@ class MedewerkerController extends Controller
         );
         return $this->redirectToRoute('beheer');
 
+    }
+
+    /**
+     * @Route("/admin/soort/activiteiten", name="soortIndex")
+     */
+    public function soortActiviteitIndex() {
+        $soortActiviteiten=$this->getDoctrine()
+            ->getRepository('App:Soortactiviteit')
+            ->findAll();
+
+        return $this->render('medewerker/soort_activiteiten.html.twig', [
+            'activiteiten'=>$soortActiviteiten
+        ]);
+    }
+
+    /**
+     * @Route("/admin/soort/activiteiten/new", name="addSoort")
+     */
+    public function soortActiviteitenToevoegen(Request $request)
+    {
+        // create a user and a contact
+        $a=new Soortactiviteit();
+
+        $form = $this->createForm(SoortactiviteitType::class, $a);
+        $form->add('save', SubmitType::class, array('label'=>"voeg toe"));
+        //$form->add('reset', ResetType::class, array('label'=>"reset"));
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($a);
+            $em->flush();
+
+            $this->addFlash(
+                'notice',
+                'soort activiteit toegevoegd!'
+            );
+            return $this->redirectToRoute('soortIndex');
+        }
+        $activiteiten=$this->getDoctrine()
+            ->getRepository('App:Soortactiviteit')
+            ->findAll();
+        return $this->render('medewerker/add.html.twig',array('form'=>$form->createView(),'naam'=>'toevoegen','aantal'=>count($activiteiten)
+        ));
     }
 }

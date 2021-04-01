@@ -2,37 +2,40 @@
 
 {% block menu %}
     <li class="active"><a href="{{ path('activiteitenoverzicht') }}">home</a></li>
-    <li><a href="{{ path('beheer') }}"><span class="badge">{{ activiteiten|length }}</span>Activiteiten</a></li>
+    <li><a href="{{ path('beheer') }}"><span class="badge"></span>Activiteiten</a></li>
     <li><a href="{{ path('soortIndex') }}"><span class="badge"></span>Soort Activiteiten</a></li>
 {% endblock %}
 {% block content %}
     <section >
         <table class="table" style="table-layout: fixed">
-            <caption>Dit zijn alle activiteiten van het kartcentrum</caption>
+            <caption>Dit zijn alle soort activiteiten van het kartcentrum</caption>
             <thead>
             <tr>
-                <td>datum</td>
-                <td>tijd</td>
-                <td>soort activiteit</td>
-                <td>deelnemers</td>
-                <td>actie</td>
+                <td>naam</td>
+                <td>beschrijving</td>
+                <td>min leeftijd</td>
+                <td>tijdsduur</td>
+                <td>prijs</td>
             </tr>
             </thead>
             <tbody>
             {% for activiteit in activiteiten %}
                 <tr>
                     <td>
-                        {{ activiteit.datum|date("d-m-Y")}}
+                        {{ activiteit.naam}}
                     </td>
                     <td>
-                        {{ activiteit.tijd|date("H:i")}}
+                        {{ activiteit.beschrijving}}
                     </td>
 
                     <td>
-                        {{ activiteit.soort.naam}}
+                        {{ activiteit.minLeeftijd}} jaar
                     </td>
                     <td>
-                        {{ activiteit.users|length}}
+                        {{ activiteit.tijdsduur}} minuten
+                    </td>
+                    <td>
+                        €{{ activiteit.prijs }}
                     </td>
                     <td title="deelnemers aan deze activiteit">
 
@@ -47,5 +50,7 @@
         </table>
         <br />
     </section>
+
+    <a href="{{ path('addSoort') }}">Soort activiteit toevoegen</a>
 
 {% endblock %}
