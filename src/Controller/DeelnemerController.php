@@ -3,8 +3,13 @@
 namespace App\Controller;
 
 
+use App\Entity\User;
+use App\Form\UserType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class DeelnemerController extends Controller
 {
@@ -68,6 +73,31 @@ class DeelnemerController extends Controller
         $em->persist($usr);
         $em->flush();
         return $this->redirectToRoute('activiteiten');
+    }
+
+    /**
+     * @Route("/profiel/wijzigen", name="profiel_wijzigen", methods={"GET","POST"})
+     */
+    public function edit(Request $request, UserPasswordEncoderInterface $passwordEncoder): Response
+    {
+        $user = $this->getUser();
+        $form = $this->createForm(UserType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $user = $form->getData();
+
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($user);
+            $em->flush();
+
+            return $this->redirectToRoute('activiteiten');
+        }
+
+        return $this->render('deelnemer/edit.html.twig', [
+            'user' => $user,
+            'form' => $form->createView(),
+        ]);
     }
 
 }

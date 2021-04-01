@@ -26,9 +26,11 @@ class ActiviteitRepository extends \Doctrine\ORM\EntityRepository
     {
 
         $em=$this->getEntityManager();
-        $query=$em->createQuery("SELECT a FROM App:Activiteit a WHERE :userid MEMBER OF a.users ORDER BY a.datum");
+        $query=$em->createQuery("SELECT a FROM App:Activiteit a WHERE :userid MEMBER OF a.users AND a.datum >= :curdate ORDER BY a.datum");
 
         $query->setParameter('userid',$userid);
+        $curDate = new \DateTime();
+        $query->setParameter('curdate', $curDate);
 
         return $query->getResult();
     }

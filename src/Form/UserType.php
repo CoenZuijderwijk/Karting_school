@@ -36,6 +36,7 @@ class UserType extends AbstractType
             ->add('postcode')
             ->add('woonplaats')
             ->add('email')
-            ->add('telefoon');
+            ->add('telefoon')
+        ->add('Submit', SubmitType::class);
     }
 }

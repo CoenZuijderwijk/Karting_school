@@ -5,9 +5,12 @@ namespace App\Controller;
 
 use App\Entity\Activiteit;
 use App\Entity\Soortactiviteit;
+use App\Entity\User;
 use App\Form\ActiviteitType;
 use App\Form\SoortactiviteitType;
+use App\Form\UserType;
 use App\Repository\SoortactiviteitRepository;
+use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\Form\Extension\Core\Type\ResetType;
@@ -203,5 +206,49 @@ class MedewerkerController extends Controller
             ->findAll();
         return $this->render('medewerker/add.html.twig',array('form'=>$form->createView(),'naam'=>'toevoegen','aantal'=>count($activiteiten)
         ));
+    }
+
+    /**
+     * @Route("/admin/deelnemers", name="deelnemers")
+     */
+    public function index()
+    {
+        $deelnemers = $this->getDoctrine()->getRepository('App:User')->findAll();
+        return $this->render('medewerker/deelnemers.html.twig', [
+            'deelnemers' => $deelnemers
+        ]);
+    }
+
+    /**
+     * @Route("/admin/deelnemers/edit/{id}", name="deelnemer_edit", methods={"GET","POST"})
+     */
+    public function edit(Request $request, User $user): Response
+    {
+        $form = $this->createForm(UserType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->getDoctrine()->getManager()->flush();
+
+            return $this->redirectToRoute('deelnemers');
+        }
+
+        return $this->render('medewerker/edit.html.twig', [
+            'user' => $user,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * @Route("/admin/deelnemers/delete/{id}", name="deelnemer_delete")
+     */
+    public function delete(Request $request, User $user)
+    {
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->remove($user);
+            $entityManager->flush();
+
+        return $this->redirectToRoute('deelnemers');
     }
 }
