@@ -6,36 +6,49 @@ use App\Entity\Soortactiviteit;
 use App\Entity\User;
 use App\Form\ActiviteitType;
 use App\Form\UserType;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\Serializer\SerializerInterface;
 
-class BezoekerController extends Controller
+class BezoekerController extends AbstractController
 {
     /**
      * @Route("/", name="homepage")
      */
-    public function indexAction()
+    public function index(): Response
     {
-
-        return $this->render('bezoeker/index.html.twig',array('boodschap'=>'Welkom'));
+        return $this->render('vue_visitor.html.twig');
     }
 
+
     /**
-     * @Route("/kartactiviteiten", name="kartactiviteiten")
+     * @Route("/api/activities", name="kartactiviteiten")
      */
-    public function kartactiviteitenAction()
+    public function kartactiviteitenAction(SerializerInterface $serializer)
     {
+
         $repository=$this->getDoctrine()->getRepository(Soortactiviteit::class);
         $soortactiviteiten=$repository->findAll();
-        return $this->render('bezoeker/kartactiviteiten.html.twig',array('boodschap'=>'Welkom','soortactiviteiten'=>$soortactiviteiten));
+
+       // dd($soortactiviteiten);
+        return $this->json($serializer->normalize($soortactiviteiten, null, ['attributes' => [
+            'id',
+            'naam',
+            'minLeeftijd',
+            'tijdsduur',
+            'prijs',
+            'beschrijving',
+        ]]));
     }
 
     /**
-     * @Route("registreren", name="registreren")
+     * @Route("/registreren", name="registreren")
      */
     public function registreren(Request $request,UserPasswordEncoderInterface $passwordEncoder)
     {
